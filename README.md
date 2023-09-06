@@ -7,6 +7,7 @@ Read this and other Raspberry Pi guides here
 * [Running Interactive Brokers gateway on Raspberry 4B and Debian 64-bit](https://nemozny.github.io/ibgateway-raspberry-64/)
 * [Share your Raspberry Debian 64-bit physical desktop remotely with x11vnc](https://nemozny.github.io/vnc-share-physical-monitor/)
 
+&nbsp;
 
 ### Intro
 I wanted to replace my hosted virtual server, that I was paying monthly fees for, with Raspberry Pi 4B / 8GB with Debian 64-bit OS. Originally I ran the server in a reliable setup with xrdp + xvbf + x11vnc that I used for several years without issues. The downside of this setup is that you have nothing to show on your physical desktop, since xrdp creates a virtual desktop unrelated to your physical screen. Linux xrdp is a different beast than Windows RDP. 
