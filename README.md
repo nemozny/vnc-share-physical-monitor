@@ -9,7 +9,7 @@ Or in other words - **I wanted to move the mouse cursor on my physical monitor u
 The idea is to run everything through SSH, on a localhost, so **no ports should be exposed remotely.**
 
 1. Virtual session (xrdp + xvfb + x11vnc)
-2. One session sharing
+2. One session sharing (xdm + x11vnc)
 
 ### Virtual session (xrdp + xvfb + x11vnc)
 The original setup.
@@ -112,7 +112,7 @@ Or you can use Mobaxterm, which is an all-in-one package.
 
 &nbsp;
 
-### One session sharing
+### One session sharing (xdm + x11vnc)
 Take your pick of a window manager. I went with Fluxbox, since it needed to install the least number of packages of all I have tried.
 
 #### Install window manager
@@ -121,8 +121,8 @@ Take your pick of a window manager. I went with Fluxbox, since it needed to inst
 ```
 &nbsp;
 
-#### Install login manager
-To be able to login on a physical screen.
+#### Install display manager
+To be able to login on a physical screen. Either xdm or whatever else you like.
 ```
 # apt-get install xdm
 ```
@@ -138,13 +138,14 @@ xvfb is running its own X server, so you need to stop and disable it.
 ```
 &nbsp;
 
-#### Create (or edit) xvfb.service
-Create this file in /etc/systemd/system/xvfb.service
+#### Create (or edit) x11vnc.service
+Create this file in /etc/systemd/system/x11vnc.service
+It has to be linked to XDM, not xrdp this time.
 
 File contents:
 ```
 [Unit]
-Description=X virtual framebuffer
+Description=VNC Server for X11
 Requires=xdm.service
 After=xdm.service
 
@@ -176,9 +177,9 @@ In Mobaxterm create session VNC:
 &nbsp;
 
 #### Reboot
-Either:
+And then either:
 
 1. Login to XDM on your physical screen and then open your Mobaxterm VNC session and connect to the same session remotely.
 2. Open your Mobaxterm VNC session, it should show XDM. Login and you will see the same sesion on your physical screen.
 
-
+Done.
