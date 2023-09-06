@@ -1,19 +1,26 @@
 # Share your Raspberry Debian 64-bit physical desktop remotely with x11vnc
+Read this and other Raspberry Pi guides here
+* [How to get Argon One v2 fan control working on Raspberry 4B and Debian 64](https://nemozny.github.io/argonone-debian-64/)
+* [Running Interactive Brokers gateway on Raspberry 4B and Debian 64-bit](https://nemozny.github.io/ibgateway-raspberry-64/)
+* [Share your Raspberry Debian 64-bit physical desktop remotely with x11vnc](https://nemozny.github.io/vnc-share-physical-monitor/)
+
 
 ### Intro
 I wanted to replace my hosted virtual server, that I was paying monthly fees for, with Raspberry Pi 4B / 8GB with Debian 64-bit OS. Originally I ran the server in a reliable setup with xrdp + xvbf + x11vnc that I used for several years without issues. The downside of this setup is that you have nothing to show on your physical desktop, since xrdp creates a virtual desktop unrelated to your physical screen. Linux xrdp is a different beast than Windows RDP. 
 Also the virtual framebuffer is not very convenient to use, since it is quite cumbersome to resize windows.
 
-My goal was to run the X server on a monitor connected to RPI via HDMI, with a lightweight window manager, while simulaneously sharing the same screen via VNC. Not RDP, mind you!
+My goal was to 
+1. run the X server on a monitor connected to RPI via HDMI, with a lightweight window manager, while simulaneously sharing the same screen via VNC. Not RDP, mind you!
 Or in other words - **I wanted to move the mouse cursor on my physical monitor using a remote connection.**
+2. I prefer to to run everything through SSH, on a localhost, so you don't have to bother with any passwords other than SSH. You need to make sure **all services were listening only on localhost!**
+3. Avoid using NoMachine and other resource hungry tools.
 
-I prefer to to run everything through SSH, on a localhost, so you don't have to bother with any passwords other than SSH. You need to make sure **all services were listening only on localhost!**
-
+I will describe two options here, but really only #2 fulfills the goal.
 1. Virtual session (xrdp + xvfb + x11vnc)
-2. One session sharing (xdm + x11vnc)
+2. *One session sharing (xdm + x11vnc)*
 
 ### Virtual session (xrdp + xvfb + x11vnc)
-The original setup.
+The original setup that will provide only virtual desktop, not physical. In case it might come useful to someone.
 
 ```
 # apt-get install xrdp xvfb x11vnc
