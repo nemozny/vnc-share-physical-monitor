@@ -17,6 +17,7 @@ The original setup.
 ```
 # apt-get install xrdp xvfb x11vnc
 ```
+&nbsp;
 
 #### Edit xrdp.ini
 Location - /etc/xrdp/xrdp.ini
@@ -32,6 +33,8 @@ ip=127.0.0.1
 port=5900 
 ```
 You can call it whatever you like. The important thing is the port and bind to localhost.
+
+&nbsp;
 
 #### Create xvfb.service
 Create this file anywhere you like (I suggest some Git repo), and link it to /etc/systemd/system/xvfb.service
@@ -59,6 +62,8 @@ Link it like this
 # ln -s /home/myownself/xvfb.service /etc/systemd/system/xvfb.service
 ```
 
+&nbsp;
+
 #### Create x11vnc.service
 File contents:
 ```
@@ -82,6 +87,7 @@ Link it the same way
 ```
 # ln -s /home/myownself/x11vnc.service /etc/systemd/system/x11vnc.service
 ```
+&nbsp;
 
 #### Enable services
 Now reload systemd and enable both services to run on a system boot.
@@ -92,7 +98,7 @@ Now reload systemd and enable both services to run on a system boot.
 # systemctl enable xvfb
 # systemctl enable x11vnc
 ```
-
+&nbsp;
 
 #### Set up RDP through an SSH tunnel
 You can use putty, kitty or whichever SSH client you like. You need to set up port forwarding from remote 3389 to any local port (1234) and use this local port 1234 in the Remote Desktop - connection 127.0.0.1:1234
@@ -100,12 +106,11 @@ You can use putty, kitty or whichever SSH client you like. You need to set up po
 
 Or you can use Mobaxterm, which is an all-in-one package.
 &nbsp;
-Mobaxterm - RDP
+* Mobaxterm - RDP
+* Remote host: 127.0.0.1, Port: 3389
+* Network settings - SSH Gateway - enter your SSH credentials.
 
-Remote host: 127.0.0.1, Port: 3389
-
-Network settings - SSH Gateway - enter your SSH credentials.
-
+&nbsp;
 
 ### One session sharing
 Take your pick of a window manager. I went with Fluxbox, since it needed to install the least number of packages of all I have tried.
@@ -114,12 +119,14 @@ Take your pick of a window manager. I went with Fluxbox, since it needed to inst
 ```
 # apt-get install fluxbox
 ```
+&nbsp;
 
 #### Install login manager
 To be able to login on a physical screen.
 ```
 # apt-get install xdm
 ```
+&nbsp;
 
 #### Stop xrdp and xvfb (if you installed it previously)
 xvfb is running its own X server, so you need to stop and disable it.
@@ -129,6 +136,7 @@ xvfb is running its own X server, so you need to stop and disable it.
 # systemctl disable xrdp
 # systemctl disable xvfb
 ```
+&nbsp;
 
 #### Create (or edit) xvfb.service
 Create this file in /etc/systemd/system/xvfb.service
@@ -149,6 +157,7 @@ RestartSec=10
 [Install]
 WantedBy=multi-user.target
 ```
+&nbsp;
 
 #### Enable services
 Now reload systemd and enable services to run on a system boot.
@@ -161,11 +170,10 @@ Now reload systemd and enable services to run on a system boot.
 
 #### Setup VNC client
 In Mobaxterm create session VNC:
+* host 127.0.0.1 port 5900
+* SSH Gateway - enter your SSH credentials
 
-host 127.0.0.1 port 5900
-
-SSH Gateway - enter your SSH credentials
-
+&nbsp;
 
 #### Reboot
 Either:
