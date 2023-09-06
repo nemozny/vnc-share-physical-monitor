@@ -35,6 +35,7 @@ You can call it whatever you like. The important thing is the port and bind to l
 
 #### Create xvfb.service
 Create this file anywhere you like (I suggest some Git repo), and link it to /etc/systemd/system/xvfb.service
+
 File contents:
 ```
 [Unit]
@@ -95,9 +96,10 @@ Now reload systemd and enable both services to run on a system boot.
 
 #### Set up RDP through an SSH tunnel
 You can use putty, kitty or whichever SSH client you like. You need to set up port forwarding from remote 3389 to any local port (1234) and use this local port 1234 in the Remote Desktop - connection 127.0.0.1:1234
+&nbsp;
 
 Or you can use Mobaxterm, which is an all-in-one package.
-
+&nbsp;
 Mobaxterm - RDP
 
 Remote host: 127.0.0.1, Port: 3389
