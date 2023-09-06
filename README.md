@@ -1,12 +1,13 @@
 # Share your Raspberry Debian 64-bit physical desktop remotely with x11vnc
 
 ### Intro
-I was about to replace my virtual server, I was paying monthly fees for, with Raspberry Pi 4B / 8GB with Debian 64-bit OS. Originally I ran the server in a reliable setup with XRDP + xvbf + x11vnc. The downside of this setup is that you have nothing to show on your physical desktop, since XRDP creates a virtual desktop unrelated to your physical screen. Linux XRDP is a different mechanism than Windows RDP. And the xvbf/virtual framebuffer is not very convenient to use.
+I wanted to replace my hosted virtual server, that I was paying monthly fees for, with Raspberry Pi 4B / 8GB with Debian 64-bit OS. Originally I ran the server in a reliable setup with xrdp + xvbf + x11vnc that I used for several years without issues. The downside of this setup is that you have nothing to show on your physical desktop, since xrdp creates a virtual desktop unrelated to your physical screen. Linux xrdp is a different beast than Windows RDP. 
+Also the virtual framebuffer is not very convenient to use, since it is quite cumbersome to resize windows.
 
-The goal was to run X server on a monitor connected to RPI, with a lightweight window manager, while simulaneously sharing the same screen via VNC. Via VNC, not via RDP!
+My goal was to run the X server on a monitor connected to RPI via HDMI, with a lightweight window manager, while simulaneously sharing the same screen via VNC. Not RDP, mind you!
 Or in other words - **I wanted to move the mouse cursor on my physical monitor using a remote connection.**
 
-The idea is to run everything through SSH, on a localhost, so **no ports should be exposed remotely.**
+I prefer to to run everything through SSH, on a localhost, so you don't have to bother with any passwords other than SSH. You need to make sure **all services were listening only on localhost!**
 
 1. Virtual session (xrdp + xvfb + x11vnc)
 2. One session sharing (xdm + x11vnc)
@@ -183,3 +184,10 @@ And then either:
 2. Open your Mobaxterm VNC session, it should show XDM. Login and you will see the same sesion on your physical screen.
 
 Done.
+
+### Firewall
+Optionally check ports your services are running on
+```
+# netstat -atupn
+```
+and block all ports on firewall except for the SSH server.
