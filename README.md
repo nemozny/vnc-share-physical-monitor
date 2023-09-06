@@ -95,10 +95,13 @@ Now reload systemd and enable both services to run on a system boot.
 
 #### Set up RDP through an SSH tunnel
 You can use putty, kitty or whichever SSH client you like. You need to set up port forwarding from remote 3389 to any local port (1234) and use this local port 1234 in the Remote Desktop - connection 127.0.0.1:1234
+
 Or you can use Mobaxterm, which is an all-in-one package.
 
 Mobaxterm - RDP
+
 Remote host: 127.0.0.1, Port: 3389
+
 Network settings - SSH Gateway - enter your SSH credentials.
 
 
@@ -127,6 +130,7 @@ xvfb is running its own X server, so you need to stop and disable it.
 
 #### Create (or edit) xvfb.service
 Create this file in /etc/systemd/system/xvfb.service
+
 File contents:
 ```
 [Unit]
@@ -155,11 +159,15 @@ Now reload systemd and enable services to run on a system boot.
 
 #### Setup VNC client
 In Mobaxterm create session VNC:
+
 host 127.0.0.1 port 5900
+
 SSH Gateway - enter your SSH credentials
+
 
 #### Reboot
 Either:
+
 1. Login to XDM on your physical screen and then open your Mobaxterm VNC session and connect to the same session remotely.
 2. Open your Mobaxterm VNC session, it should show XDM. Login and you will see the same sesion on your physical screen.
 
