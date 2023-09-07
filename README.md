@@ -203,6 +203,27 @@ Optionally check ports your services are running on
 ```
 and block all ports on firewall except for the SSH server.
 
+Where
+
+* 0.0.0.0:22
+
+and
+
+* :::22
+
+is SSHd listening on all interfaces and 
+
+* 127.0.0.1:5900
+
+and 
+
+* ::1:5900
+
+is x11vnc listening only on localhost.
+
+
 All services, except SSH, in your Debian were bound exclusively to the localhost, so if you had other computer sitting on your network right next to your Debian, it will not be able to connect to anything, except SSH.
 
 Then you can login from your client (let's say Windows) and use SSH port forwarding to basically map your Debian services (ports) to your client Windows ports. So ultimately your running VNC service 127.0.0.1:5900 in Debian will get port forwarded/mapped to your Windows client 127.0.0.1:1234 (you can choose any port on the client). Your Windows VNC client would then open 127.0.0.1:1234 and find that it actually opened the screen in Debian.
+
+For added security you can also add an extra SSH jumpbox.
