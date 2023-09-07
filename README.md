@@ -16,7 +16,7 @@ Also the virtual framebuffer is not very convenient to use, since it is quite cu
 My goal was to 
 1. run the X server on a monitor connected to RPI via HDMI, with a lightweight window manager, while simulaneously sharing the same screen via VNC. Not RDP, mind you!
 Or in other words - **I wanted to move the mouse cursor on my physical monitor using a remote connection.**
-2. I prefer to to run everything through SSH, on a localhost, so you don't have to bother with any passwords other than SSH. You need to make sure **all services were listening only on localhost!**
+2. I prefer to to run all services only on localhost, and connect to them through SSH forwarding, so you don't have to bother with any passwords other than SSH. You need to make sure **all services were listening only on localhost!**
 3. Avoid using NoMachine and other resource hungry tools.
 
 I will describe two options here, but really only #2 fulfills the goal.
@@ -202,3 +202,7 @@ Optionally check ports your services are running on
 # netstat -atupn
 ```
 and block all ports on firewall except for the SSH server.
+
+All services, except SSH, in your Debian were bound exclusively to the localhost, so if you had other computer sitting on your network right next to your Debian, it will not be able to connect to anything, except SSH.
+
+Then you can login from your client (let's say Windows) and use SSH port forwarding to basically map your Debian services (ports) to your client Windows ports. So ultimately your running VNC service 127.0.0.1:5900 in Debian will get port forwarded/mapped to your Windows client 127.0.0.1:1234 (you can choose any port on the client). Your Windows VNC client would then open 127.0.0.1:1234 and find that it actually opened the screen in Debian.
