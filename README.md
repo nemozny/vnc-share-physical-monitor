@@ -19,12 +19,15 @@ Or in other words - **I wanted to move the mouse cursor on my physical monitor u
 2. I prefer to to run all services only on localhost, and connect to them through SSH forwarding, so you don't have to bother with any passwords other than SSH. You need to make sure **all services were listening only on localhost!**
 3. Avoid using NoMachine and other resource hungry tools.
 
-I will describe two options here, but really only #2 fulfills the goal.
-1. Virtual session (xrdp + xvfb + x11vnc)
-2. One session sharing with login screen (xdm + x11vnc)
-3. One session sharing with autologin (slim + x11vnc)
+I will describe a few options here, but really only #2 and #3 allow for sharing your physical screen.
+1. **Virtual session (xrdp + xvfb + x11vnc)**
+2. **One session sharing with login screen (xdm + x11vnc)**
+3. **One session sharing with autologin (slim + x11vnc)**
+Please see the appropriate sections below.
 
-### Virtual session (xrdp + xvfb + x11vnc)
+&nbsp;
+
+### 1. Virtual session (xrdp + xvfb + x11vnc)
 The original setup that will provide only virtual desktop, not physical. In case it might come useful to someone.
 
 ```
@@ -125,7 +128,7 @@ Or you can use Mobaxterm, which is an all-in-one package.
 
 &nbsp;
 
-### One session sharing with login screen (xdm + x11vnc)
+### 2. One session sharing with login screen (xdm + x11vnc)
 You will need to login to XDM every time, either remotely or locally, before you can start any apps with GUI.
 
 Take your pick of a window manager. I went with Fluxbox, since it needed to install the least number of packages of all I have tried.
@@ -201,7 +204,7 @@ Done.
 
 &nbsp;
 
-### One session sharing with autologin (slim + x11vnc)
+### 3. One session sharing with autologin (slim + x11vnc)
 If you want to start your OS straight into an X session, then you will either need a login manager that handles autologin, or execute *startx* as a specific user (I haven't followed this scenario).
 
 The easiest solution is to ditch XDM, which does NOT support autologin, and replace it with Slim. KDM and GDM can do autologin too, but they drag a lot of deadweight around.
@@ -241,11 +244,15 @@ auto_login          yes
 ```
 Save and exit.
 
+&nbsp;
+
 #### Create (or edit) x11vnc.service
 Create this file in /etc/systemd/system/x11vnc.service
+
 This time the service has to be linked to ... guess what? ... the slim.service.
 
 Plus please notice the *-auth guess* argument did not work for Slim, so you need to enter *-auth /var/run/slim.auth*.
+
 Enter your favorite *geometry*.
 
 File contents:
@@ -279,6 +286,7 @@ Start services or reboot.
 
 You should jump straight to Xorg now.
 
+&nbsp;
 
 ### Firewall
 Optionally check ports your services are running on
