@@ -21,7 +21,8 @@ Or in other words - **I wanted to move the mouse cursor on my physical monitor u
 
 I will describe two options here, but really only #2 fulfills the goal.
 1. Virtual session (xrdp + xvfb + x11vnc)
-2. *One session sharing (xdm + x11vnc)*
+2. One session sharing with login screen (xdm + x11vnc)
+3. One session sharing with autologin (slim + x11vnc)
 
 ### Virtual session (xrdp + xvfb + x11vnc)
 The original setup that will provide only virtual desktop, not physical. In case it might come useful to someone.
@@ -124,7 +125,9 @@ Or you can use Mobaxterm, which is an all-in-one package.
 
 &nbsp;
 
-### One session sharing (xdm + x11vnc)
+### One session sharing with login screen (xdm + x11vnc)
+You will need to login to XDM every time, either remotely or locally, before you can start any apps with GUI.
+
 Take your pick of a window manager. I went with Fluxbox, since it needed to install the least number of packages of all I have tried.
 
 #### Install window manager
@@ -134,7 +137,7 @@ Take your pick of a window manager. I went with Fluxbox, since it needed to inst
 &nbsp;
 
 #### Install display manager
-To be able to login on a physical screen. Either xdm or whatever else you like.
+To be able to login on a physical screen. Either using xdm or whatever else you like.
 ```
 # apt-get install xdm
 ```
@@ -163,7 +166,7 @@ After=xdm.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/x11vnc -ncache 10 -ncache_cr -display :0 -noxrecord -noxdamage -forever -shared -o /var/log/x11vnc.log -noipv6 -localhost -loop -nopw -auth guess
+ExecStart=/usr/bin/x11vnc -ncache 10 -ncache_cr -display :0 -geometry 1400x800 -noxrecord -noxdamage -forever -shared -o /var/log/x11vnc.log -noipv6 -localhost -loop -nopw -auth guess
 Restart=on-failure
 RestartSec=10
 
@@ -195,6 +198,87 @@ And then either:
 2. Open your Mobaxterm VNC session, it should show XDM. Login and you will see the same sesion on your physical screen.
 
 Done.
+
+&nbsp;
+
+### One session sharing with autologin (slim + x11vnc)
+If you want to start your OS straight into an X session, then you will either need a login manager that handles autologin, or execute *startx* as a specific user (I haven't followed this scenario).
+
+The easiest solution is to ditch XDM, which does NOT support autologin, and replace it with Slim. KDM and GDM can do autologin too, but they drag a lot of deadweight around.
+
+Warning! This is not a terribly secure scenario, so make sure nobody can type on your physical screen and that you run all services only on localhost - see the Firewall section below.
+
+#### Install window manager
+```
+# apt-get install slim
+```
+&nbsp;
+
+#### Stop xrdp and xvfb (if you installed it previously)
+I had xrdp starting on its own during boot, even if the service was disabled. I am not that versed in systemd to troubleshoot this, so I just killed and uninstalled it.
+
+```
+# systemctl stop xrdp
+# systemctl disable xrdp
+# systemctl disable xvfb
+# apt-get remove xrdp
+```
+&nbsp;
+
+#### Edit slim.conf
+Edit slim.conf and enable autologin and enter your user.
+
+```
+# nano /etc/slim.conf
+```
+You only need to change two lines:
+```
+default_user        your_username
+```
+and 
+```
+auto_login          yes
+```
+Save and exit.
+
+#### Create (or edit) x11vnc.service
+Create this file in /etc/systemd/system/x11vnc.service
+This time the service has to be linked to ... guess what? ... the slim.service.
+
+Plus please notice the *-auth guess* argument did not work for Slim, so you need to enter *-auth /var/run/slim.auth*.
+Enter your favorite *geometry*.
+
+File contents:
+```
+[Unit]
+Description=VNC Server for X11
+Requires=slim.service
+After=slim.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/x11vnc -ncache 10 -ncache_cr -display :0 -geometry 1400x800 -noxrecord -noxdamage -forever -shared -o /var/log/x11vnc.log -noipv6 -localhost -loop -nopw -auth /var/run/slim.auth
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+&nbsp;
+
+#### Enable services
+Now reload systemd and enable services to run on a system boot.
+
+```
+# systemctl daemon-reload
+# systemctl enable slim
+# systemctl enable x11vnc
+```
+
+Start services or reboot.
+
+You should jump straight to Xorg now.
+
 
 ### Firewall
 Optionally check ports your services are running on
