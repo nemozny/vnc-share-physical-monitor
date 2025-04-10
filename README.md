@@ -204,87 +204,9 @@ Done.
 
 &nbsp;
 
-### 3. One session sharing with autologin (slim + x11vnc)
-If you want to start your OS straight into an X session, then you will either need a login manager that handles autologin, or execute *startx* as a specific user (I haven't followed this scenario).
-
-The easiest solution is to ditch XDM, which does NOT support autologin, and replace it with Slim. KDM and GDM can do autologin too, but they drag a lot of deadweight around.
-
-Warning! This is not a terribly secure scenario, so make sure nobody can type on your physical screen and that you run all services only on localhost - see the Firewall section below.
-
-#### Install window manager
-```
-# apt-get install slim
-```
-&nbsp;
-
-#### Stop xrdp and xvfb (if you installed it previously)
-I had xrdp starting on its own during boot, even if the service was disabled. I am not that versed in systemd to troubleshoot this, so I just killed and uninstalled it.
-
-```
-# systemctl stop xrdp
-# systemctl disable xrdp
-# systemctl disable xvfb
-# apt-get remove xrdp
-```
-&nbsp;
-
-#### Edit slim.conf
-Edit slim.conf and enable autologin and enter your user.
-
-```
-# nano /etc/slim.conf
-```
-You only need to change two lines:
-```
-default_user        your_username
-```
-and 
-```
-auto_login          yes
-```
-Save and exit.
-
-&nbsp;
-
-#### Create (or edit) x11vnc.service
-Create this file in /etc/systemd/system/x11vnc.service
-
-This time the service has to be linked to ... guess what? ... the slim.service.
-
-Plus please notice the *-auth guess* argument did not work for Slim, so you need to enter *-auth /var/run/slim.auth*.
-
-Enter your favorite *geometry*.
-
-File contents:
-```
-[Unit]
-Description=VNC Server for X11
-Requires=slim.service
-After=slim.service
-
-[Service]
-Type=simple
-ExecStart=/usr/bin/x11vnc -ncache 10 -ncache_cr -display :0 -geometry 1400x800 -noxrecord -noxdamage -forever -shared -o /var/log/x11vnc.log -noipv6 -localhost -loop -nopw -auth /var/run/slim.auth
-Restart=on-failure
-RestartSec=10
-
-[Install]
-WantedBy=multi-user.target
-```
-&nbsp;
-
-#### Enable services
-Now reload systemd and enable services to run on a system boot.
-
-```
-# systemctl daemon-reload
-# systemctl enable slim
-# systemctl enable x11vnc
-```
-
-Start services or reboot.
-
-You should jump straight to Xorg now.
+### 3. Login to physical screen session
+Follow [this Raspberry guide](https://www.raspberrypi.com/documentation/computers/remote-access.html#vnc).
+TigerVNC is no longer maintained on Windows and TightVNC did not work for me, neither did Mobaxterm VNC. Try and use UltraVNC viewer.
 
 &nbsp;
 
