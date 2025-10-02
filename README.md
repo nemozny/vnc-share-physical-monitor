@@ -1,4 +1,4 @@
-# Share your Raspberry Debian 64-bit physical desktop remotely with x11vnc
+# Access physical display over remote connection on Raspberry Pi 5 with Debian 13 on arm64
 
 &nbsp;
 
@@ -6,6 +6,80 @@ Read this and other Raspberry Pi guides here
 * [How to get Argon One v2 fan control working on Raspberry 4B and Debian 64](https://nemozny.github.io/argonone-debian-64/)
 * [Running Interactive Brokers gateway on Raspberry 4B and Debian 64-bit](https://nemozny.github.io/ibgateway-raspberry-64/)
 * [Share your Raspberry Debian 64-bit physical desktop remotely with x11vnc](https://nemozny.github.io/vnc-share-physical-monitor/)
+
+&nbsp;
+
+## New Debian 13 update
+VNC connection used to work flawlessly on Debian 12, but no longer on Debian 13.
+
+The update from Debian 12 to Debian 13 was rather painful (the usual dependency hell), since I did not do full system wipe, but only changed version in /etc/apt/sources.list from "bookworm" to "stable" (trixie).
+In any case, the default for Debian 13 is GNOME running on Wayland. Problem with Wayland is that there is no way for you to start GUI application on physical desktop from SSH shell, since Wayland is not a server (but whatever), and DISPLAY:=0 is no longer available.
+
+Also wayvnc is no longer the VNC of choice on Debian 13 for some reason, so ...
+
+### Get rid of Wayland and switch to GNOME on Xorg
+First make sure you are running GDM3 and not lightdm or others
+```
+$ apt install gdm3
+```
+or
+```
+dpkg-reconfigure gdm3
+```
+will switch to GDM3 as your login manager.
+
+When booted to login screen (GDM3), click settings icon in the bottom right corner and change to 
+"GNOME on Xorg"
+<img width="720" height="540" alt="configuring-xorg-as-default-gnome-session_2" src="https://github.com/user-attachments/assets/bdb37c25-2b7d-4ae2-8799-9a2794464150" />
+
+_Note: The screenshot is just for illustration, the actual options were different, but I could not make a proper screenshot in GDM3._
+
+Changing to Xorg will enable you to run `DISPLAY:=0 xterm` from SSH shell.
+
+&nbsp;
+
+### Enable autologin
+Either edit /etc/gdm3/daemon.conf and change 
+```
+automaticLoginEnabled = true
+```
+Alternatively open GNOME Settings - Users, click your username and enable "Automatic Login". 
+
+&nbsp;
+
+### Enable VNC
+Unless it was already enabled. You can check using `sudo ss -tlnp sport = :5900` or `sudo lsof -i :5900`.
+To enable VNC, check the [official Raspbery PI guide](https://www.raspberrypi.com/documentation/computers/remote-access.html#vnc), which tells you to open "Raspberry PI Configuration" app and enable the VNC switch.
+However, for some reason VNC in Debian 12 was Wayvnc, but in Debian 13 it seems to be `systemctl | grep vnc` service called *vncserver-x11-serviced*. Which also caused vnc client issues on my end, since *vncviewer* from TigerVNC stopped working.
+I recommend downloading [RealVNC Viewer](https://www.realvnc.com/en/connect/download/viewer/).
+
+&nbsp;
+
+### Disable GNOME inactivity suspend
+Again, for some reason you cannot change suspend in the GUI on Debian 13.
+
+Follow this [askubuntu.com post](https://askubuntu.com/a/1262605), you need to run these commands in GUI (not on SSH shell), and as a local user, not root or sudo!
+
+Get current value.
+```
+gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type
+```
+Get all values.
+```
+gsettings range org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type
+```
+Change value to 'nothing'
+```
+gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'
+```
+Check if the value changed.
+```
+gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type
+```
+
+&nbsp;
+
+## Old Debian 12 section
 
 &nbsp;
 
