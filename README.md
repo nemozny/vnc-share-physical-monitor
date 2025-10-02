@@ -15,7 +15,12 @@ VNC connection used to work flawlessly on Debian 12, but no longer on Debian 13.
 The update from Debian 12 to Debian 13 was rather painful (the usual dependency hell), since I did not do full system wipe, but only changed version in /etc/apt/sources.list from "bookworm" to "stable" (trixie).
 In any case, the default for Debian 13 is GNOME running on Wayland. Problem with Wayland is that there is no way for you to start GUI application on physical desktop from SSH shell, since Wayland is not a server (but whatever), and DISPLAY:=0 is no longer available.
 
-Also wayvnc is no longer the VNC of choice on Debian 13 for some reason, so ...
+Forget about GNOME Settings - System - Remote Desktop, these options and connections are RDP, which will NOT allow seamless connection to your physical screen session. Unless you enabled RDP manually and signed in every time you needed remote connection.
+Compared to VNC server + GDM3 autologin, which allows connecting to running physical desktop session.
+
+Wayvnc is no longer the VNC server of choice on Debian 13 for some reason, so ...
+
+&nbsp;
 
 ### Get rid of Wayland and switch to GNOME on Xorg
 First make sure you are running GDM3 and not lightdm or others
