@@ -18,7 +18,13 @@ In any case, the default for Debian 13 is GNOME running on Wayland. Problem with
 Forget about GNOME Settings - System - Remote Desktop, these options and connections are RDP, which will NOT allow seamless connection to your physical screen session. Unless you enabled RDP manually and signed in every time you needed remote connection.
 Compared to VNC server + GDM3 autologin, which allows connecting to running physical desktop session.
 
-Wayvnc is no longer the VNC server of choice on Debian 13 for some reason, so ...
+&nbsp;
+
+⚠️ *Oct 2025: [vncserver-x11-serviced](https://help.realvnc.com/hc/en-us/articles/360002310857-vncserver-x11-serviced-man-page) is crashing without connected physical monitor! When my HDMI cable was connected through HDMI hub with a different device, or in other words disconnected from RPI, the VNC Viewer session would crash immediately after establishing a session. It seems to be a fault of the VNC server. When HDMI cable (display) was connected to RPI, the VNC session went through without issues and I could control the desktop. Again, connecting to desktop worked in prior Debian 12 without issues, albeit with Wayvnc and Wayland. In this light, perhaps it would be better to get rid of vncserver-x11 and install Wayvnc back, but I haven't tested that yet.
+
+&nbsp;
+
+Since Wayvnc is no longer the VNC server of choice on Debian 13 for some reason, we need to make certain changes to the system.
 
 &nbsp;
 
