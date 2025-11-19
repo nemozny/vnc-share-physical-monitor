@@ -10,15 +10,15 @@ Read this and other Raspberry Pi guides here
 &nbsp;
 
 ## New Debian 13 update
-VNC connection used to work flawlessly on Debian 12, but no longer on Debian 13.
+VNC connection used to work flawlessly on Debian 12, but not on Debian 13.
 
-The update from Debian 12 to Debian 13 was rather painful (the usual dependency hell), since I did not do full system wipe, but only changed version in /etc/apt/sources.list from "bookworm" to "stable" (trixie).
-In any case, the default for Debian 13 is GNOME running on Wayland. Problem with Wayland is that there is no way for you to start GUI application on physical desktop from SSH shell, since Wayland is not a server (but whatever), and DISPLAY:=0 is no longer available.
+The default desktop for Debian 13 was GNOME running on Wayland. Problem with Wayland is that you cannot start GUI application on physical desktop from remote SSH shell, since Wayland is not a server (but whatever compositor), and DISPLAY:=0 is no longer available.
 
-Forget about GNOME Settings - System - Remote Desktop, these options and connections are RDP, which will NOT allow seamless connection to your physical screen session. Unless you enabled RDP manually and signed in every time you needed remote connection.
-Compared to VNC server + GDM3 autologin, which allows connecting to running physical desktop session.
+You can ignore RDP remote sessions, because RDP mainly creates virtual desktops. You could connect to your physical desktop in GNOME using RDP, but you would need to login to the GNOME sesion on your physical display first, and enable RDP in the menu, which defeats the purpose of connecting to the display remotely without local keyboard and mouse.
 
 &nbsp;
+
+⚠️ *Nov 2025: Looks like the below issue with VNC crashing was caused by GNOME. I have switched to LXDE and it works fine so far, no VNC crashes on login. LXDE also runs on X11 and is incompatible with Wayland. I actually like LXDE a lot better than GNOME. It allows both connecting to existing physical display session and creating virtual (headless) session. The only tweak needed was to open Preferences - Raspberry PI Configuration - Display - Headless resolution - 1920x1080.
 
 ⚠️ *Oct 2025: [vncserver-x11-serviced](https://help.realvnc.com/hc/en-us/articles/360002310857-vncserver-x11-serviced-man-page) is crashing without connected physical monitor! When my HDMI cable was connected through HDMI hub with a different device, or in other words disconnected from RPI, the VNC Viewer session would crash immediately after establishing a session. It seems to be a fault of the VNC server. When HDMI cable (display) was connected to RPI, the VNC session went through without issues and I could control the desktop. Again, connecting to desktop worked in prior Debian 12 without issues, albeit with Wayvnc and Wayland. In this light, perhaps it would be better to get rid of vncserver-x11 and install Wayvnc back, but I haven't tested that yet.
 
@@ -28,8 +28,11 @@ Since Wayvnc is no longer the VNC server of choice on Debian 13 for some reason,
 
 &nbsp;
 
+<details>
+  <summary>Older GNOME paragraph</summary>
 ### Get rid of Wayland and switch to GNOME on Xorg
 First make sure you are running GDM3 and not lightdm or others
+
 ```
 $ apt install gdm3
 ```
@@ -47,25 +50,34 @@ _Note: The screenshot is just for illustration, the actual options were differen
 
 Changing to Xorg will enable you to run `DISPLAY:=0 xterm` from SSH shell.
 
+</details>
+
+&nbsp;
+
+### Get rid of Wayland and switch to LXDE on X11
+The default login manager is LightDM, no need to change it. While logging in, click on an icon in the top right corner and switch to LXDE (not XFCE)
+<img width="720" height="540" alt="configuring-xorg-as-default" src="https://raw.githubusercontent.com/nemozny/vnc-share-physical-monitor/refs/heads/main/lxde_session.jpg" />
+
 &nbsp;
 
 ### Enable autologin
-Either edit /etc/gdm3/daemon.conf and change 
-```
-automaticLoginEnabled = true
-```
-Alternatively open GNOME Settings - Users, click your username and enable "Automatic Login". 
+Open Preferences - Raspberry PI Configuration and select "Boot to desktop" and "Desktop auto login"
+
+<img alt="configuring-xorg-as-default" src="https://raw.githubusercontent.com/nemozny/vnc-share-physical-monitor/refs/heads/main/raspi-configuration.png" />
+
+or in console run `sudo raspi-config` and select "1 System Options" and "S5 Boot to desktop" and "S6 Auto Login to desktop".
 
 &nbsp;
 
 ### Enable VNC
 Unless it was already enabled. You can check using `sudo ss -tlnp sport = :5900` or `sudo lsof -i :5900`.
 To enable VNC, check the [official Raspbery PI guide](https://www.raspberrypi.com/documentation/computers/remote-access.html#vnc), which tells you to open "Raspberry PI Configuration" app and enable the VNC switch.
-However, for some reason VNC in Debian 12 was Wayvnc, but in Debian 13 it seems to be `systemctl | grep vnc` service called *vncserver-x11-serviced*. Which also caused vnc client issues on my end, since *vncviewer* from TigerVNC stopped working.
-I recommend downloading [RealVNC Viewer](https://www.realvnc.com/en/connect/download/viewer/).
+In Debian 13 the default VNC server is called *vncserver-x11-serviced*. To avoid VNC client issues I recommend downloading [RealVNC Viewer](https://www.realvnc.com/en/connect/download/viewer/).
 
 &nbsp;
 
+<details>
+  <summary>Old GNOME inactivity suspend paragraph</summary>
 ### Disable GNOME inactivity suspend
 Again, for some reason you cannot change suspend in the GUI on Debian 13.
 
@@ -88,9 +100,14 @@ Check if the value changed.
 gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type
 ```
 
+</details>
+
 &nbsp;
 
-## Old Debian 12 section
+<details>
+  <summary>Old Debian 12 section</summary>
+  
+  ## Old Debian 12 section
 
 &nbsp;
 
@@ -293,36 +310,25 @@ Done.
 Follow [this Raspberry guide](https://www.raspberrypi.com/documentation/computers/remote-access.html#vnc).
 TigerVNC is no longer maintained on Windows and TightVNC did not work for me, neither did Mobaxterm VNC. Try and use UltraVNC viewer.
 
+</details>
+
 &nbsp;
 
 ### Firewall
-Optionally check ports your services are running on
+Optionally check on which ports are your services listening
 ```
 # netstat -atupn
 ```
-and block all ports on firewall except for the SSH server.
 
-Where
-
+SSH server is listening on all interfaces
 * 0.0.0.0:22
-
 and
-
 * :::22
 
-is SSHd listening on all interfaces and 
 
-* 127.0.0.1:5900
-
+x11vnc is listening on all interfaces
+* 0.0.0.0:5900
 and 
+* :::5900
 
-* ::1:5900
-
-is x11vnc listening only on localhost.
-
-
-All services, except SSH, in your Debian were bound exclusively to the localhost, so if you had other computer sitting on your network right next to your Debian, it will not be able to connect to anything, except SSH.
-
-Then you can login from your client (let's say Windows) and use SSH port forwarding to basically map your Debian services (ports) to your client Windows ports. So ultimately your running VNC service 127.0.0.1:5900 in Debian will get port forwarded/mapped to your Windows client 127.0.0.1:1234 (you can choose any port on the client). Your Windows VNC client would then open 127.0.0.1:1234 and find that it actually opened the screen in Debian.
-
-For added security you can also add an extra SSH jumpbox.
+You can then tighten your security by changing x11vnc to run on localhost only and allowing only SSH through your firewall and no other services. SSH can forward ports from services running on (remote) localhost to the (local) client. Effectively closing the server to everything other than SSH, yet allowing to consume any of its localhost services by remapping (forwarding) ports to the client workstation.
