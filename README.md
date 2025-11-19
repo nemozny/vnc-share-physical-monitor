@@ -55,8 +55,9 @@ Changing to Xorg will enable you to run `DISPLAY:=0 xterm` from SSH shell.
 &nbsp;
 
 ### Get rid of Wayland and switch to LXDE on X11
-The default login manager is LightDM, no need to change it. While logging in, click on an icon in the top right corner and switch to LXDE (not XFCE)
-<img width="720" height="540" alt="configuring-xorg-as-default" src="https://raw.githubusercontent.com/nemozny/vnc-share-physical-monitor/refs/heads/main/lxde_session.jpg" />
+The default login manager is LightDM, no need to change it. While logging in, click on an icon in the top right corner and switch to LXDE
+
+<img width="720" height="540" alt="switch to LXDE" src="https://raw.githubusercontent.com/nemozny/vnc-share-physical-monitor/refs/heads/main/switch_to_LXDE.png" />
 
 &nbsp;
 
